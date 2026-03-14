@@ -1,0 +1,14 @@
+class Reverse:
+    def __init__(self,s):
+        self.s=s
+        self.index=len(s)
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.index==0:
+            raise StopIteration
+        self.index-=1
+        return self.s[self.index]
+str=input()
+for c in Reverse(str):
+    print(c,end='')
