@@ -16,11 +16,14 @@ colors=[BLACK,RED,BLUE,GREEN]
 current_color=BLACK
 #Tools
 tool='brush'
+thickness=5
 clock=pygame.time.Clock()
 drawing=False
 start_pos=None
 screen.fill(WHITE)
 def draw_ui():
+    #UI
+    pygame.draw.rect(screen, WHITE, (0,0, WIDTH, 120))
     #Draw color pallete
     for i, col in enumerate(colors):
         pygame.draw.rect(screen,col,(10+i*40, 10,30,30))
@@ -30,6 +33,10 @@ def draw_ui():
     for i, t in enumerate(tools):
         text=font.render(t, True, BLACK)
         screen.blit(text,(10+i*80, 50))
+    #thickness display
+    font=pygame.font.SysFont(None,24)
+    text=font.render(f"Thickness: {thickness}", True, BLACK)
+    screen.blit(text,(10,80))
 while True:
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
@@ -55,23 +62,28 @@ while True:
                 tool='circle'
             elif event.key==pygame.K_e:
                 tool='eraser'
+            #thickness control
+            elif event.key==pygame.K_UP:
+                thickness+=1
+            elif event.key==pygame.K_DOWN:
+                thickness=max(1, thickness-1)
         #Mouse up
         if event.type==pygame.MOUSEBUTTONUP:
             drawing=False
             end_pos=event.pos
             if tool=='rect':
                 rect=pygame.Rect(start_pos,(end_pos[0]-start_pos[0], end_pos[1]-start_pos[1]))
-                pygame.draw.rect(screen,current_color,rect,2)
+                pygame.draw.rect(screen,current_color,rect,thickness)
             elif tool=='circle':
                 radius=int(((end_pos[0]-start_pos[0])**2+(end_pos[1]-start_pos[1])**2)**0.5)
-                pygame.draw.circle(screen,current_color, start_pos, radius, 2)
+                pygame.draw.circle(screen,current_color, start_pos, radius, thickness)
     #Drawing while moving
     if drawing:
         mouse_pos=pygame.mouse.get_pos()
         if tool=='brush':
-            pygame.draw.circle(screen, current_color, mouse_pos, 5)
+            pygame.draw.circle(screen, current_color, mouse_pos, thickness)
         elif tool=='eraser':
-            pygame.draw.circle(screen, WHITE, mouse_pos,10)
+            pygame.draw.circle(screen, WHITE, mouse_pos, thickness)
     draw_ui()
     pygame.display.flip()
     clock.tick(60)
